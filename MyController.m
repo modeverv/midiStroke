@@ -116,8 +116,8 @@
 	int packetStart = packet->data[0];		// remembers original type and channel of message before altering
 	if ((packetStart>>4) == 0x0b) { cc = true; }
 	
-	//printf("the channel is: %i \n", channel);
-	//printf("the note is: %i \n", packet->data[1]);
+    printf("the channel is: %i \n", channel);
+    printf("the note is: %i \n", packet->data[1]);
 	
 	for (i=0; i<[_startNotes count]; i++) {	
 		StartNote *sn = [_startNotes objectAtIndex:i];						// creates a startNote object for each item in list
@@ -134,6 +134,8 @@
                             char *charString = [(NSString *)[eprop objectForKey: @"keystroke"] UTF8String];
                             int theLetter = [self keyCodeForKeyString:charString];
 
+                            printf("the letter is: %i \n", theLetter);
+                            
                             CGEventFlags flags = 0;
                             CGEventRef down = CGEventCreateKeyboardEvent( NULL, (CGKeyCode)theLetter, true);
                             CGEventRef up = CGEventCreateKeyboardEvent( NULL, (CGKeyCode)theLetter, false);
@@ -142,7 +144,8 @@
                                 flags = flags | kCGEventFlagMaskCommand;
                             }
                             if ([[eprop objectForKey: @"shift"] intValue] == 1) {
-                                flags = flags | kCGEventFlagMaskShift;
+//                                flags = flags | kCGEventFlagMaskShift;
+                                flags = flags | 0x38;
                             }
                             if ([[eprop objectForKey: @"option"] intValue] == 1) {
                                 flags = flags | kCGEventFlagMaskAlternate;
@@ -158,6 +161,7 @@
                             CGEventSetFlags(up, (flags | CGEventGetFlags(up)));
                             CGEventPost(kCGHIDEventTap, up);
                             CFRelease(up);
+                            
                         });
 					}
 				}
@@ -224,7 +228,7 @@
 	if (strcmp(keyString, "ESCAPE") == 0) return 53;
 	//54?
 	if (strcmp(keyString, "CMD") == 0) return 55;
-	if (strcmp(keyString, "SHIFT") == 0) return 56;
+    if (strcmp(keyString, "SHIFT") == 0) return 56;
 	if (strcmp(keyString, "CAPSLOCK") == 0) return 57;
 	if (strcmp(keyString, "OPTION") == 0) return 58;
 	if (strcmp(keyString, "CONTROL") == 0) return 59;
@@ -286,7 +290,15 @@
 	if (strcmp(keyString, "DOWN") == 0) return 125;
 	if (strcmp(keyString, "UP") == 0) return 126;
 
-	return 0;
+    if (strcmp(keyString, "RIGHTSHIFT") == 0){
+        return 0x3C;
+    }
+    if (strcmp(keyString, "LEFTSHIFT") == 0){
+        printf("LEFTSHIFT \n");
+        return 0x38;
+    }
+
+    return 0;
 }
 
 @end
